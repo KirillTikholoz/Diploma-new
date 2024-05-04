@@ -1,0 +1,12 @@
+E:\Diploma\Server\Server\src\main\java\org\example\Main.java
+E:\Diploma\Server\Server\src\main\java\org\example\services\DocService.java
+E:\Diploma\Server\Server\src\main\java\org\example\controllers\ProvideController.java
+E:\Diploma\Server\Server\src\main\java\org\example\controllers\ResourcesController.java
+E:\Diploma\Server\Server\src\main\java\org\example\utils\JwtTokenUtils.java
+E:\Diploma\Server\Server\src\main\java\org\example\config\SecurityConfig.java
+E:\Diploma\Server\Server\src\main\java\org\example\repo\DocRepository.java
+E:\Diploma\Server\Server\src\main\java\org\example\controllers\SearchController.java
+E:\Diploma\Server\Server\src\main\java\org\example\controllers\DownloadController.java
+E:\Diploma\Server\Server\src\main\java\org\example\controllers\testController.java
+E:\Diploma\Server\Server\src\main\java\org\example\utils\ConnectionWithSearcherUtils.java
+E:\Diploma\Server\Server\src\main\java\org\example\domain\Document.java

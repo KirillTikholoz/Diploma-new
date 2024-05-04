@@ -1,0 +1,32 @@
+server:
+  port: 8080
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5432/SIR
+    username: postgres
+    password: Kirill2305
+    driver-class-name: org.postgresql.Driver
+  hikari:
+    connection-test-query: SELECT 1
+    minimum-idle: 1
+    maximum-pool-size: 5
+    pool-name: YourAppHikariCP
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+  application:
+    name: Main
+jwt:
+  secretAccess: fgsdffsg456456rertr66yerty56465sdfmk68poiopz
+  secretRefresh: sssdffsg456456rertr66yerty589898ghtrcop9741b
+  lifetime: 1440m
+  lifetimeRefresh: 10080m
+urls:
+  searcher:
+    domain: http://localhost:8080
+    add-path: /test
+    search-path: /testSearch
