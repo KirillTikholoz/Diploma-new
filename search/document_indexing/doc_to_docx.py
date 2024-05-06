@@ -60,10 +60,3 @@ def batch_convert_docs_to_docx(input_folder, output_folder):
             print(docx_file_path)
             convert_doc_to_docx(doc_file_path, docx_file_path)
             print(f"Converted {filename} to .docx")
-
-
-# Пример использования: преобразование файлов .doc в папке 'input_docs' и сохранение их в 'output_docs'
-# batch_convert_docs_to_docx(r'C:\Users\admin\Desktop\diploma\docs', r'C:\Users\admin\Desktop\diploma\docs')
-# convert_doc_to_docx(r'C:\Users\admin\Desktop\diploma\50-486.doc', r'C:\Users\admin\Desktop\diploma\50-486.docx')
-# convert_doc_to_docx_2(r'C:\Users\admin\Desktop\diploma\50-486.doc', r'C:\Users\admin\Desktop\diploma\50-486.docx')
-convert_doc_to_docx_with_pywin32(r'C:\Users\admin\Desktop\diploma\50-486.doc', r'C:\Users\admin\Desktop\diploma\50-486.docx')
