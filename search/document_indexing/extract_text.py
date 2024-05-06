@@ -4,7 +4,6 @@ import textract
 
 # Функция для извлечения текста из документа .docx, включая таблицы
 def extract_text_from_docx(file_path):
-    print(f'Идет извлечение текста из файла {file_path}')
     doc = Document(file_path)
     text = ''
     for paragraph in doc.paragraphs:
@@ -14,7 +13,6 @@ def extract_text_from_docx(file_path):
             for cell in row.cells:
                 text += cell.text + '\t'  # Добавляем табуляцию между ячейками таблицы
             text += '\n'
-    print(f'текст из файла {file_path} был извлечен')
     return text.strip()
 
 
