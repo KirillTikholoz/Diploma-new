@@ -89,8 +89,9 @@ public class JwtTokenUtils {
     }
 
     private Claims getAllClaimsFromAccessToken(String token){
+        Keys.secretKeyFor(SignatureAlgorithm.HS256);
         return Jwts.parser()
-                .setSigningKey(secretAccess)
+                .setSigningKey(Keys.hmacShaKeyFor(secretAccess.getBytes()))
                 .build()
                 .parseClaimsJws(token)
                 .getBody();

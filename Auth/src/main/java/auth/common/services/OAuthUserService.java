@@ -20,7 +20,7 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class OAuthUserService implements UserDetailsService {
     private final OAuthUserRepository oAuthUserRepository;
-    private final RoleRepository roleRepository;
+    private final RoleService roleService;
 
     public Optional<OAuthUser> findById(Long id){
         return oAuthUserRepository.findById(id);
@@ -43,7 +43,7 @@ public class OAuthUserService implements UserDetailsService {
 
     public OAuthUser createNewUser(OAuthUser oAuthUser){
         // добавить проверку на существует ли такая роль + остальные проверки
-        oAuthUser.setRoles(List.of(roleRepository.findByName("ROLE_USER").get()));
+        oAuthUser.setRoles(List.of(roleService.getUserRole()));
         return oAuthUserRepository.save(oAuthUser);
     }
 }
