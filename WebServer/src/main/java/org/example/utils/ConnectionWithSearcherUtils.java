@@ -11,6 +11,7 @@ import org.apache.http.entity.mime.MultipartEntityBuilder;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.util.EntityUtils;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
@@ -54,6 +55,7 @@ public class ConnectionWithSearcherUtils {
         }
     }
 
+    @Cacheable(value = "searchCache")
     public ResponseEntity<String> searchRequest(String query){
         try {
             String urlSearcher = urlSearcherDomain + pathSearcherSearch;

@@ -18,16 +18,14 @@ import java.util.List;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping()
-@CrossOrigin
 public class SearchController {
-
     private final ConnectionWithSearcherUtils connectionWithSearcherUtils;
     private final DocService documentsServices;
 
     @GetMapping("/search")
-    @PermitAll
-    public ResponseEntity<?> handleFileUpload(@RequestParam String query) {
-        System.out.println("Запрос в контроллере: " + query);
+    public ResponseEntity<?> handleFileUpload(@RequestParam String query,
+                                              @RequestParam(defaultValue = "0") int page,
+                                              @RequestParam(defaultValue = "5") int size) {
         ResponseEntity<String> responseEntity = connectionWithSearcherUtils.searchRequest(query);
 
         String jsonResponse = responseEntity.getBody();
@@ -42,11 +40,7 @@ public class SearchController {
                 ids.add(idNode.asLong());
             }
 
-//            System.out.println(jsonResponse);
-//            System.out.println(idsArray);
-//            System.out.println(ids);
-
-            List<Document> docs = documentsServices.getDocsByIds(ids);
+            List<Document> docs = documentsServices.getDocsByIds(ids, page, size);
             System.out.println(docs);
 
             return ResponseEntity.status(HttpStatus.OK).body(docs);
@@ -55,7 +49,6 @@ public class SearchController {
         }
 
         return ResponseEntity.badRequest().body(null);
-        //return connectionWithSearcherUtils.searchRequest(query);
     }
 
 }
