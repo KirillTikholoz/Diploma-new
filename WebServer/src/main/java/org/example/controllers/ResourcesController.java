@@ -4,7 +4,9 @@ import jakarta.annotation.security.PermitAll;
 import lombok.RequiredArgsConstructor;
 import org.apache.tika.Tika;
 import org.example.domain.Document;
+import org.example.domain.Step;
 import org.example.services.DocService;
+import org.example.services.StepService;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpHeaders;
@@ -21,13 +23,12 @@ import java.util.Optional;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/resources")
-@CrossOrigin
 public class ResourcesController {
 
     private final DocService documentsServices;
+    private final StepService stepService;
 
     @GetMapping("/get/{id}")
-    @PermitAll
     public ResponseEntity<?> getResource(@PathVariable Long id){
         Optional<Document> document = documentsServices.findDocumentById(id);
 
@@ -62,33 +63,35 @@ public class ResourcesController {
     }
 
     @GetMapping("/documents")
-    @PermitAll
     public ResponseEntity<?> getDocumentsForPage(@RequestParam(defaultValue = "0") int page,
                                                  @RequestParam(defaultValue = "5") int size){
 
         Page<Document> documents = documentsServices.getPageDocuments(page, size);
-        System.out.println(documents.getContent());
         return ResponseEntity.status(HttpStatus.OK).body(documents);
     }
 
     @GetMapping("/projects")
-    @PermitAll
     public ResponseEntity<?> getProjectsForPage(@RequestParam(defaultValue = "0") int page,
                                                 @RequestParam(defaultValue = "5") int size){
 
         Page<Document> projects = documentsServices.getPageProjects(page, size);
-        System.out.println(projects.getContent());
         return ResponseEntity.status(HttpStatus.OK).body(projects);
     }
 
     @GetMapping("/solutions")
-    @PermitAll
     public ResponseEntity<?> getSolutionsForPage(@RequestParam(defaultValue = "0") int page,
                                                  @RequestParam(defaultValue = "5") int size){
 
         Page<Document> solution = documentsServices.getPageSolution(page, size);
-        System.out.println(solution.getContent());
         return ResponseEntity.status(HttpStatus.OK).body(solution);
+    }
+
+    @GetMapping("/news")
+    public ResponseEntity<?> getNewsForPage(@RequestParam(defaultValue = "0") int page,
+                                            @RequestParam(defaultValue = "5") int size){
+
+        Page<Step> steps = stepService.getPageNews(page, size);
+        return ResponseEntity.status(HttpStatus.OK).body(steps);
     }
 
 }

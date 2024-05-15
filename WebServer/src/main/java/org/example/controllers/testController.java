@@ -43,7 +43,7 @@ public class testController {
     @GetMapping("/testSearch")
     @PermitAll
     public ResponseEntity<?> testSearch(@RequestParam String query){
-
+        System.out.println("Я ЗАШЕЛ В ПОИСКОВИК КАК В МИКРОСЕРВИС");
         System.out.println("Запрос на другой стороне: " + query);
 
         ObjectMapper objectMapper = new ObjectMapper();
@@ -51,10 +51,14 @@ public class testController {
         try {
             Map<String, Object> jsonData = new HashMap<>();
             List<Long> ids = new ArrayList<>();
-            ids.add(4L);
             ids.add(5L);
             ids.add(6L);
             ids.add(7L);
+            ids.add(8L);
+            ids.add(9L);
+            ids.add(10L);
+            ids.add(12L);
+            ids.add(13L);
             jsonData.put("ids", ids);
 
             String json = objectMapper.writeValueAsString(jsonData);
