@@ -5,6 +5,8 @@ import org.apache.http.HttpResponse;
 import org.example.config.SecurityConfig;
 import org.example.domain.Document;
 import org.example.dtos.DocumentDownloadDto;
+import org.example.dtos.DocumentIdRequestDto;
+import org.example.dtos.DocumentIdResponseDto;
 import org.example.repo.DocRepository;
 import org.example.utils.ConnectionWithSearcherUtils;
 import org.example.utils.JwtTokenUtils;
@@ -13,8 +15,10 @@ import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.*;
@@ -32,6 +36,7 @@ public class DocService {
     private final StepService stepService;
     private final ConnectionWithSearcherUtils connectionWithSearcherUtils;
 
+    @Transactional
     public void createNewDocument(String name, String description, String publisher, MultipartFile file){
         Date currentDate = new Date();
 
@@ -72,9 +77,11 @@ public class DocService {
         documentsRepository.save(newDocument);
         stepService.createFirstStep(newDocument);
 
-        // сохраняю документ в поисковик, но нужно будет обработчики ошибок добавить
-        // (вдруг док сохраниться в системе, а при сохранении в поисковик проблема произойдет)
-        ResponseEntity<HttpResponse> responce = connectionWithSearcherUtils.addDocumentInSearcher(newDocument.getId(), file);
+        ResponseEntity<String> response = connectionWithSearcherUtils.addDocumentInSearcher(newDocument.getId(), file);
+
+        if (response.getStatusCode() != HttpStatus.OK) {
+            throw new RuntimeException("Ошибка при сохранении документа в поисковике");
+        }
     }
 
     public Optional<Document> findDocumentById(Long id){
@@ -96,8 +103,9 @@ public class DocService {
         return documentsRepository.findByProvidedTrueOrderByDateAsc(pageable);
     }
 
-    public Boolean provideProjectIntoSolution(Long id, String publisher){
-        Optional<Document> optionalDocument = documentsRepository.findById(id);
+    @Transactional
+    public Boolean provideProjectIntoSolution(DocumentIdRequestDto documentIdRequest, String publisher){
+        Optional<Document> optionalDocument = documentsRepository.findById(documentIdRequest.getDocumentId());
         if (optionalDocument.isPresent()) {
             Date currentDate = new Date();
 
@@ -109,10 +117,15 @@ public class DocService {
 
             stepService.createLastStep(document);
 
+            ResponseEntity<String> response = connectionWithSearcherUtils.addSolution(documentIdRequest);
+            if (response.getStatusCode() != HttpStatus.OK) {
+                throw new RuntimeException("Ошибка при проведении проекта в решение в поисковике");
+            }
+
             return true;
         }
         else {
-            logger.info("Документ с id: " + id + " не найден");
+            logger.info("Документ с id: " + documentIdRequest.getDocumentId() + " не найден");
             return false;
         }
 
@@ -132,10 +145,10 @@ public class DocService {
 
     }
 
-    public List<Document> getDocsByIds(List<Long> ids, int page, int size){
+    public List<Document> getDocsByIds(DocumentIdResponseDto documentIdResponseDto, int page, int size){
         int start = page * size;
-        int end = Math.min(start + size, ids.size());
-        List<Long> idsToFetch = ids.subList(start, end);
+        int end = Math.min(start + size, documentIdResponseDto.getIds().size());
+        List<Long> idsToFetch = documentIdResponseDto.getIds().subList(start, end);
 
         return documentsRepository.findAllById(idsToFetch);
     }

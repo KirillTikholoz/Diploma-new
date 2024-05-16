@@ -3,6 +3,7 @@ package org.example.controllers;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.annotation.security.PermitAll;
 import lombok.RequiredArgsConstructor;
+import org.example.dtos.DocumentIdRequestDto;
 import org.example.services.DocService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -38,11 +39,24 @@ public class testController {
 
 
         return ResponseEntity.ok("ok");
+        //return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
     }
 
-    @GetMapping("/testSearch")
+    @PostMapping("/project_to_decision")
     @PermitAll
-    public ResponseEntity<?> testSearch(@RequestParam String query){
+    public ResponseEntity<?> provide(@RequestBody DocumentIdRequestDto documentIdRequestDto) {
+
+        System.out.println("я вошел в /project_to_decision");
+        System.out.println(documentIdRequestDto.getDocumentId());
+
+
+        return ResponseEntity.ok("ok");
+        //return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
+    }
+
+    @GetMapping("/testSearch/project")
+    @PermitAll
+    public ResponseEntity<?> testSearchProject(@RequestParam String query){
         System.out.println("Я ЗАШЕЛ В ПОИСКОВИК КАК В МИКРОСЕРВИС");
         System.out.println("Запрос на другой стороне: " + query);
 
@@ -59,6 +73,56 @@ public class testController {
             ids.add(10L);
             ids.add(12L);
             ids.add(13L);
+            jsonData.put("ids", ids);
+
+            String json = objectMapper.writeValueAsString(jsonData);
+
+            return ResponseEntity.ok(json);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error occurred: " + e.getMessage());
+        }
+    }
+
+    @GetMapping("/testSearch/solution")
+    @PermitAll
+    public ResponseEntity<?> testSearchSolution(@RequestParam String query){
+        System.out.println("Я ЗАШЕЛ В ПОИСКОВИК КАК В МИКРОСЕРВИС");
+        System.out.println("Запрос на другой стороне: " + query);
+
+        ObjectMapper objectMapper = new ObjectMapper();
+
+        try {
+            Map<String, Object> jsonData = new HashMap<>();
+            List<Long> ids = new ArrayList<>();
+            ids.add(9L);
+            ids.add(10L);
+            ids.add(12L);
+            ids.add(13L);
+            jsonData.put("ids", ids);
+
+            String json = objectMapper.writeValueAsString(jsonData);
+
+            return ResponseEntity.ok(json);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error occurred: " + e.getMessage());
+        }
+    }
+
+    @GetMapping("/testSearch/document")
+    @PermitAll
+    public ResponseEntity<?> testSearchDocument(@RequestParam String query){
+        System.out.println("Я ЗАШЕЛ В ПОИСКОВИК КАК В МИКРОСЕРВИС");
+        System.out.println("Запрос на другой стороне: " + query);
+
+        ObjectMapper objectMapper = new ObjectMapper();
+
+        try {
+            Map<String, Object> jsonData = new HashMap<>();
+            List<String> ids = new ArrayList<>();
+            ids.add("20");
+            ids.add("21");
+            ids.add("22");
+            ids.add("23");
             jsonData.put("ids", ids);
 
             String json = objectMapper.writeValueAsString(jsonData);
