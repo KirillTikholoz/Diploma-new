@@ -34,14 +34,19 @@ public class SecurityConfig {
                 .authorizeHttpRequests(authorize ->
                         authorize
                                 .requestMatchers("/test").permitAll()
-                                .requestMatchers("/testSearch").permitAll()
+                                .requestMatchers("/testSearch/project").permitAll()
+                                .requestMatchers("/testSearch/solution").permitAll()
+                                .requestMatchers("/testSearch/document").permitAll()
+                                .requestMatchers("/project_to_decision").permitAll()
                                 .requestMatchers("/hello").permitAll()
                                 .requestMatchers("/resources/get/{id}").permitAll()
                                 .requestMatchers("/resources/documents").permitAll()
                                 .requestMatchers("/resources/projects").permitAll()
                                 .requestMatchers("/resources/solutions").permitAll()
                                 .requestMatchers("/resources/news").permitAll()
-                                .requestMatchers("/search").permitAll()
+                                .requestMatchers("/search/projects").permitAll()
+                                .requestMatchers("/search/solutions").permitAll()
+                                .requestMatchers("/search//documents").permitAll()
                                 .requestMatchers("/getProjectSteps").permitAll()
                                 .requestMatchers("/documents/download").hasRole("USER")
                                 .requestMatchers("/documents/provide").hasRole("USER")
@@ -60,7 +65,7 @@ public class SecurityConfig {
     @Bean
     CorsConfigurationSource corsConfigurationSource(){
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(Arrays.asList("https://localhost:8443", "http://localhost:8000")); // Разрешите запросы с указанного домена
+        configuration.setAllowedOrigins(Arrays.asList("https://localhost:8443", "https://localhost:3000", "http://localhost:3000","http://localhost:8000")); // Разрешите запросы с указанного домена
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE"));
         configuration.setAllowCredentials(true);
         configuration.setMaxAge(3600L);

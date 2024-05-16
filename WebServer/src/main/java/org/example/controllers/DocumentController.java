@@ -53,9 +53,8 @@ public class DocumentController {
                                                @CookieValue(name = "accessToken", required = false) String accessTokenArg
     ) {
         try {
-            Long id = documentIdRequest.getDocumentId();
             String publisher = jwtTokenUtils.getNameFromAccessToken(accessTokenArg);
-            Boolean provideFlag = documentsServices.provideProjectIntoSolution(id, publisher);
+            Boolean provideFlag = documentsServices.provideProjectIntoSolution(documentIdRequest, publisher);
             if (provideFlag) {
                 return ResponseEntity.ok("Проект успешно стал решением");
             } else {

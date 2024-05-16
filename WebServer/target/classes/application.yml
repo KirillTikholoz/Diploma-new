@@ -29,4 +29,8 @@ urls:
   searcher:
     domain: http://localhost:8080
     add-path: /test
-    search-path: /testSearch
+    provide-path: /project_to_decision
+    search-path:
+      solution: /testSearch/solution
+      project: /testSearch/project
+      document: /testSearch/document
