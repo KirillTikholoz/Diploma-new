@@ -1,5 +1,5 @@
 from flask import Flask, request, jsonify
-from index_docs import index_single_document
+from index_docs import index_single_document, replace_document
 from docs_finder import search_document
 
 app = Flask(__name__)
@@ -17,7 +17,7 @@ def upload_file():
     return f'Файл успешно загружен и добавлен в поисковик. ID:'.format(doc_id)
 
 
-@app.route('/search', methods=['GET'])
+@app.route('/search/document', methods=['GET'])
 def search_file():
     query = request.args.get('query')
     results = search_document(query)
@@ -26,3 +26,33 @@ def search_file():
         response["ids"].append(result["id"])
 
     return jsonify(response)
+
+
+@app.route('/search/project', methods=['GET'])
+def search_file():
+    query = request.args.get('query')
+    results = search_document(query)
+    response = {"ids": []}
+    for result in results:
+        response["ids"].append(result["id"])
+
+    return jsonify(response)
+
+
+@app.route('/search/solution', methods=['GET'])
+def search_file():
+    query = request.args.get('query')
+    results = search_document(query)
+    response = {"ids": []}
+    for result in results:
+        response["ids"].append(result["id"])
+
+    return jsonify(response)
+
+
+@app.route('/project_to_decision', methods=['POST'])
+def project_to_decision():
+    request_data = request.json()
+    document_id = request_data.get("documentId")
+    replace_document(document_id)
+    return f'Проект успешно проведен в решения:'.format(document_id)

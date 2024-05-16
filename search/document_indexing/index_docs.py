@@ -8,7 +8,9 @@ from doc_to_docx import convert_doc_to_docx
 import PyPDF2
 
 
-index_name = 'doc_index'
+document_index_name = 'doc_index'
+project_index_name = 'project_index'
+decision_index_name = 'decision_index'
 es = Elasticsearch("http://localhost:9200", request_timeout=60)
 
 # Настройки индекса
@@ -31,6 +33,14 @@ def index_document(index, doc_id, text):
     es.index(index=index, id=doc_id, body={'text': text})
 
 
+def index_project(index, pj_id, text):
+    es.index(index=index, id=pj_id, body={'text': text})
+
+
+def index_decision(index, dc_id, text):
+    es.index(index=index, id=dc_id, body={'text': text})
+
+
 def extract_name_from_path(path):
     last_slash_position = max(path.rfind('/'), path.rfind('\\'))
     if last_slash_position != -1:
@@ -49,7 +59,8 @@ def index_single_document(document_path, doc_id):
             print(text)
             try:
                 print(doc_id, type(doc_id))
-                index_document(index_name, doc_id, text)
+                index_document(document_index_name, doc_id, text)
+                index_project(decision_index_name, doc_id, text)
                 print('Документ успешно проиндексирован:', filename)
             except Exception as e:
                 print('Ошибка при индексации документа:', e)
@@ -79,7 +90,8 @@ def index_single_document(document_path, doc_id):
                 text += page_obj.extract_text() + '\n'
 
             print(text)
-            index_document(index_name, doc_id, text)
+            index_document(document_index_name, doc_id, text)
+            index_project(decision_index_name, doc_id, text)
             print('Документ успешно проиндексирован:', filename)
 
         except Exception as e:
@@ -96,13 +108,13 @@ def index_documents_from_folder(folder_path, index):
                 try:
                     index_document(index, filename, text)
                     print('Документ успешно проиндексирован:', filename)
-                    time.sleep(1)
+                    # time.sleep(1)
                 except Exception as e:
                     print('Ошибка при индексации документа:', e)
                     time.sleep(1)
             except Exception as e:
                 print('Ошибка при попытке извлечь текст:', e)
-                time.sleep(1)
+                # time.sleep(1)
 
         elif filename.endswith(".doc"):
             try:
@@ -111,4 +123,10 @@ def index_documents_from_folder(folder_path, index):
                 index_document(index, filename, text)
             except Exception as e:
                 print('Формат doc:', e)
-                time.sleep(1)
+                # time.sleep(1)
+
+
+def replace_document(doc_id):
+    document = es.get(index=project_index_name, id=doc_id)
+    es.delete(index=project_index_name, id=doc_id)
+    es.index(index=decision_index_name, id=doc_id, body=document["_source"])
