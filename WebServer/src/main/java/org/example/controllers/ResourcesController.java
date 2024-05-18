@@ -70,6 +70,15 @@ public class ResourcesController {
         return ResponseEntity.status(HttpStatus.OK).body(documents);
     }
 
+    @GetMapping("/documentsByAuthor")
+    public ResponseEntity<?> getDocumentsByAuthorForPage(@RequestParam String publisher,
+                                                         @RequestParam(defaultValue = "0") int page,
+                                                         @RequestParam(defaultValue = "5") int size){
+
+        Page<Document> documents = documentsServices.getPageDocumentsByAuthor(publisher, page, size);
+        return ResponseEntity.status(HttpStatus.OK).body(documents);
+    }
+
     @GetMapping("/projects")
     public ResponseEntity<?> getProjectsForPage(@RequestParam(defaultValue = "0") int page,
                                                 @RequestParam(defaultValue = "5") int size){

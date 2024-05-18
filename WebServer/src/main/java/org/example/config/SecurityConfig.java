@@ -41,6 +41,7 @@ public class SecurityConfig {
                                 .requestMatchers("/hello").permitAll()
                                 .requestMatchers("/resources/get/{id}").permitAll()
                                 .requestMatchers("/resources/documents").permitAll()
+                                .requestMatchers("/resources/documentsByAuthor").permitAll()
                                 .requestMatchers("/resources/projects").permitAll()
                                 .requestMatchers("/resources/solutions").permitAll()
                                 .requestMatchers("/resources/news").permitAll()

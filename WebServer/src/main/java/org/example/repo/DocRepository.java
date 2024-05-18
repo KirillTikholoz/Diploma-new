@@ -15,6 +15,7 @@ public interface DocRepository extends JpaRepository<Document, Long> {
     Page<Document> findAllByOrderByDateAsc(Pageable pageable);
     Page<Document> findByProvidedFalseOrderByDateAsc(Pageable pageable);
     Page<Document> findByProvidedTrueOrderByDateAsc(Pageable pageable);
+    Page<Document> findAllByPublisher(String publisher, Pageable pageable);
 
     //List<Optional<Document>> findAllById(List<Long> ids);
 
