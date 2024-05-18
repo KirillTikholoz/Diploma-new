@@ -20,7 +20,7 @@ def upload_file():
 @app.route('/search/document', methods=['GET'])
 def search_file():
     query = request.args.get('query')
-    results = search_document(query)
+    results = search_document(query, search_index='document_index')
     response = {"ids": []}
     for result in results:
         response["ids"].append(result["id"])
@@ -29,9 +29,9 @@ def search_file():
 
 
 @app.route('/search/project', methods=['GET'])
-def search_file():
+def search_project():
     query = request.args.get('query')
-    results = search_document(query)
+    results = search_document(query, search_index='project_index')
     response = {"ids": []}
     for result in results:
         response["ids"].append(result["id"])
@@ -40,9 +40,9 @@ def search_file():
 
 
 @app.route('/search/solution', methods=['GET'])
-def search_file():
+def search_solution():
     query = request.args.get('query')
-    results = search_document(query)
+    results = search_document(query, search_index='decision_index')
     response = {"ids": []}
     for result in results:
         response["ids"].append(result["id"])
@@ -52,7 +52,7 @@ def search_file():
 
 @app.route('/project_to_decision', methods=['POST'])
 def project_to_decision():
-    request_data = request.json()
+    request_data = request.get_json()
     document_id = request_data.get("documentId")
     replace_document(document_id)
     return f'Проект успешно проведен в решения:'.format(document_id)
