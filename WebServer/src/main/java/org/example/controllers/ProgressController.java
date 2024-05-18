@@ -38,8 +38,8 @@ public class ProgressController {
     }
 
     @GetMapping("/getProjectSteps")
-    public ResponseEntity<?> addProjectStep(@RequestBody DocumentIdRequestDto getStepRequest){
-        Optional<Document> existingDoc = documentsService.findDocumentById(getStepRequest.getDocumentId());
+    public ResponseEntity<?> addProjectStep(@RequestParam Long documentId){
+        Optional<Document> existingDoc = documentsService.findDocumentById(documentId);
 
         if (existingDoc.isPresent()){
             List<Step> steps = stepService.findStepsByDocument(existingDoc.get());

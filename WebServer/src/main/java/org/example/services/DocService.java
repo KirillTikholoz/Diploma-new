@@ -93,6 +93,11 @@ public class DocService {
         return documentsRepository.findAllByOrderByDateAsc(pageable);
     }
 
+    public Page<Document> getPageDocumentsByAuthor(String publisher, int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        return documentsRepository.findAllByPublisher(publisher, pageable);
+    }
+
     public Page<Document> getPageProjects(int page, int size) {
         Pageable pageable = PageRequest.of(page, size);
         return documentsRepository.findByProvidedFalseOrderByDateAsc(pageable);
