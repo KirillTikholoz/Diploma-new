@@ -1,14 +1,12 @@
 import os
-import time
 import pythoncom
-from extract_text import extract_text_from_docx, extract_text_from_doc
-
+from extract_text import extract_text_from_docx
 from elasticsearch import Elasticsearch
 from doc_to_docx import convert_doc_to_docx
 import PyPDF2
 
 
-document_index_name = 'doc_index'
+document_index_name = 'document_index'
 project_index_name = 'project_index'
 decision_index_name = 'decision_index'
 es = Elasticsearch("http://localhost:9200", request_timeout=60)
@@ -37,10 +35,6 @@ def index_project(index, pj_id, text):
     es.index(index=index, id=pj_id, body={'text': text})
 
 
-def index_decision(index, dc_id, text):
-    es.index(index=index, id=dc_id, body={'text': text})
-
-
 def extract_name_from_path(path):
     last_slash_position = max(path.rfind('/'), path.rfind('\\'))
     if last_slash_position != -1:
@@ -56,11 +50,11 @@ def index_single_document(document_path, doc_id):
     if document_path.endswith(".docx"):
         try:
             text = extract_text_from_docx(document_path)
-            print(text)
+            # print(text)
             try:
                 print(doc_id, type(doc_id))
                 index_document(document_index_name, doc_id, text)
-                index_project(decision_index_name, doc_id, text)
+                index_project(project_index_name, doc_id, text)
                 print('Документ успешно проиндексирован:', filename)
             except Exception as e:
                 print('Ошибка при индексации документа:', e)
@@ -89,41 +83,14 @@ def index_single_document(document_path, doc_id):
                 page_obj = pdfreader.pages[i]
                 text += page_obj.extract_text() + '\n'
 
-            print(text)
+            # print(text)
+            print(doc_id, type(doc_id))
             index_document(document_index_name, doc_id, text)
-            index_project(decision_index_name, doc_id, text)
+            index_project(project_index_name, doc_id, text)
             print('Документ успешно проиндексирован:', filename)
 
         except Exception as e:
             print('Ошибка при индексации документа:', e)
-
-
-def index_documents_from_folder(folder_path, index):
-    for filename in os.listdir(folder_path):
-        if filename.endswith(".docx"):
-            file_path = os.path.join(folder_path, filename)
-            try:
-                text = extract_text_from_docx(file_path)
-                print(text)
-                try:
-                    index_document(index, filename, text)
-                    print('Документ успешно проиндексирован:', filename)
-                    # time.sleep(1)
-                except Exception as e:
-                    print('Ошибка при индексации документа:', e)
-                    time.sleep(1)
-            except Exception as e:
-                print('Ошибка при попытке извлечь текст:', e)
-                # time.sleep(1)
-
-        elif filename.endswith(".doc"):
-            try:
-                file_path = os.path.join(folder_path, filename)
-                text = extract_text_from_doc(file_path)
-                index_document(index, filename, text)
-            except Exception as e:
-                print('Формат doc:', e)
-                # time.sleep(1)
 
 
 def replace_document(doc_id):

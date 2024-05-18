@@ -4,7 +4,7 @@ spring:
   datasource:
     url: jdbc:postgresql://localhost:5432/SIR
     username: postgres
-    password: Kirill2305
+    password: p9o_1yQvum
     driver-class-name: org.postgresql.Driver
   hikari:
     connection-test-query: SELECT 1
@@ -27,10 +27,10 @@ jwt:
   lifetimeRefresh: 10080m
 urls:
   searcher:
-    domain: http://localhost:8080
-    add-path: /test
+    domain: http://localhost:5000
+    add-path: /upload
     provide-path: /project_to_decision
     search-path:
-      solution: /testSearch/solution
-      project: /testSearch/project
-      document: /testSearch/document
+      solution: /search/solution
+      project: /search/project
+      document: /search/document
