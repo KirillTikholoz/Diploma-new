@@ -47,7 +47,7 @@ public class SecurityConfig {
                                 .requestMatchers("/resources/news").permitAll()
                                 .requestMatchers("/search/projects").permitAll()
                                 .requestMatchers("/search/solutions").permitAll()
-                                .requestMatchers("/search//documents").permitAll()
+                                .requestMatchers("/search/documents").permitAll()
                                 .requestMatchers("/getProjectSteps").permitAll()
                                 .requestMatchers("/documents/download").hasRole("USER")
                                 .requestMatchers("/documents/provide").hasRole("USER")
