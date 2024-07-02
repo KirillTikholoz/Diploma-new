@@ -28,7 +28,6 @@ import java.util.Optional;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping
-@CrossOrigin
 public class AuthController {
     private static final Logger logger = LoggerFactory.getLogger(AuthController.class);
     private final UserService userService;

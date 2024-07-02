@@ -53,7 +53,7 @@ public class JwtTokenUtils {
                 .compact();
     }
 
-    public String generateRefreshToken(CustomUserDetails customUserDetails){
+    public String generateRefreshToken(UserDetails customUserDetails){
         Date issuedDate = new Date();
         Date expiredDate = new Date(issuedDate.getTime() + lifetimeRefresh.toMillis());
         return Jwts.builder()
@@ -72,7 +72,7 @@ public class JwtTokenUtils {
                 .collect(Collectors.toList());
         claims.put("roles", RoleList);
 
-        String firstName = oAuthUserDetails.getUsername();
+        String firstName = oAuthUserDetails.getFirstName();
         String lastName = oAuthUserDetails.getLastName();
         claims.put("firstName", firstName);
         claims.put("lastName", lastName);
@@ -81,7 +81,7 @@ public class JwtTokenUtils {
         Date expiredDate = new Date(issuedDate.getTime() + jwtLifetime.toMillis());
         return Jwts.builder()
                 .setClaims(claims)
-                .setSubject(oAuthUserDetails.getId().toString())
+                .setSubject(oAuthUserDetails.getUsername())
                 .setIssuedAt(issuedDate)
                 .setExpiration(expiredDate)
                 .signWith(Keys.hmacShaKeyFor(secretAccess.getBytes()), SignatureAlgorithm.HS256)
@@ -114,12 +114,6 @@ public class JwtTokenUtils {
     }
     public List<String> getRoles(String token){
         return getAllClaimsFromAccessToken(token).get("roles", List.class);
-    }
-    public Long getExpirationTimeAccessToken(String token){
-        return getAllClaimsFromAccessToken(token).getExpiration().getTime();
-    }
-    public Long getExpirationTimeRefreshToken(String token){
-        return getAllClaimsFromRefreshToken(token).getExpiration().getTime();
     }
 
 }
