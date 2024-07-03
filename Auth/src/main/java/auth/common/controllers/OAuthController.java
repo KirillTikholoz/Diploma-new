@@ -1,6 +1,6 @@
 package auth.common.controllers;
 
-import auth.common.UserDetails.OAuthUserDetails;
+import auth.common.UserDetails.CustomUserDetails;
 import auth.common.dtos.VkResponseUserInfoDto;
 import auth.common.services.OAuthUserService;
 import auth.common.utils.JwtTokenUtils;
@@ -15,8 +15,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.RestClientException;
-import org.springframework.web.context.request.RequestContextHolder;
-import org.springframework.web.context.request.ServletRequestAttributes;
 import org.springframework.web.servlet.view.RedirectView;
 
 
@@ -49,24 +47,12 @@ public class OAuthController {
                         return oAuthUserService.createNewUser(vkResponseUserInfoDto);
                     });
 
-            OAuthUserDetails oAuthUserDetails = oAuthUserService.loadUserByUsername(vkResponseUserInfoDto.getId());
+            CustomUserDetails customUserDetails = oAuthUserService.loadUserByUsername(vkResponseUserInfoDto.getId());
 
-            String accessToken = jwtTokenUtils.generateAccessTokenForUserVk(oAuthUserDetails);
-            String refreshToken = jwtTokenUtils.generateRefreshToken(oAuthUserDetails);
+            String accessToken = jwtTokenUtils.generateAccessToken(customUserDetails);
+            String refreshToken = jwtTokenUtils.generateRefreshTokenUserVk(customUserDetails);
 
-            Cookie accessTokenCookie = new Cookie("accessToken", accessToken);
-            Cookie refreshTokenCookie = new Cookie("refreshToken", refreshToken);
-
-            accessTokenCookie.setMaxAge(86400);
-            refreshTokenCookie.setMaxAge(86400);
-
-            accessTokenCookie.setHttpOnly(true);
-            refreshTokenCookie.setHttpOnly(true);
-
-            HttpServletResponse response = ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes()).getResponse();
-
-            response.addCookie(accessTokenCookie);
-            response.addCookie(refreshTokenCookie);
+            jwtTokenUtils.makeCookies(accessToken, refreshToken);
 
             //return new RedirectView(mainFrontPage);
             return mainFrontPage;

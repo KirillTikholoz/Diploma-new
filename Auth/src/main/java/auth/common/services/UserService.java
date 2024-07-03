@@ -34,7 +34,7 @@ public class UserService implements UserDetailsService {
                 String.format("Пользователь '%s' не найден", username)
         ));
 
-        return CustomUserDetails.create(user);
+        return CustomUserDetails.createFromUser(user);
     }
 
     public void createNewUser(RegistrateUserDto registrateUserDto){

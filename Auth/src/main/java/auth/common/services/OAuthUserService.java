@@ -1,6 +1,6 @@
 package auth.common.services;
 
-import auth.common.UserDetails.OAuthUserDetails;
+import auth.common.UserDetails.CustomUserDetails;
 import auth.common.domain.OAuthUser;
 import auth.common.dtos.VkResponseUserInfoDto;
 import auth.common.repo.OAuthUserRepository;
@@ -28,20 +28,20 @@ public class OAuthUserService implements UserDetailsService {
 
     @Override
     @Transactional
-    public OAuthUserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+    public CustomUserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         OAuthUser oAuthUser = findByUsername(username).orElseThrow(() -> new UsernameNotFoundException(
                 String.format("Пользователь с id='%s' не найден", username)
         ));
 
-        return OAuthUserDetails.create(oAuthUser);
+        return CustomUserDetails.createFromOAuthUser(oAuthUser);
     }
     @Transactional
-    public OAuthUserDetails loadUserById(Long id) throws UsernameNotFoundException {
+    public CustomUserDetails loadUserById(Long id) throws UsernameNotFoundException {
         OAuthUser oAuthUser = findById(id).orElseThrow(() -> new UsernameNotFoundException(
                 String.format("Пользователь с id='%s' не найден", id)
         ));
 
-        return OAuthUserDetails.create(oAuthUser);
+        return CustomUserDetails.createFromOAuthUser(oAuthUser);
     }
 
     public OAuthUser createNewUser(VkResponseUserInfoDto vkResponseUserInfoDto){
