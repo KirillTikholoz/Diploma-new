@@ -5,11 +5,13 @@ import lombok.Data;
 import java.util.Collection;
 
 @Entity
-@Table(name = "OAuthUsr")
+@Table(name = "oauth_usr")
 @Data
 public class OAuthUser {
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+    private String username;
     private String firstName;
     private String lastName;
 

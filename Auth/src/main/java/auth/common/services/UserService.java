@@ -2,12 +2,9 @@ package auth.common.services;
 
 import auth.common.UserDetails.CustomUserDetails;
 import auth.common.dtos.RegistrateUserDto;
-import auth.common.repo.RoleRepository;
 import auth.common.repo.UserRepository;
 import auth.common.domain.User;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -16,10 +13,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.security.SecureRandom;
 import java.util.Base64;
-import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -39,7 +34,7 @@ public class UserService implements UserDetailsService {
                 String.format("Пользователь '%s' не найден", username)
         ));
 
-        return CustomUserDetails.create(user);
+        return CustomUserDetails.createFromUser(user);
     }
 
     public void createNewUser(RegistrateUserDto registrateUserDto){

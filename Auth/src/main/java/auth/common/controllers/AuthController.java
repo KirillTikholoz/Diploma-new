@@ -15,20 +15,13 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
-import jakarta.servlet.http.Cookie;
-import jakarta.servlet.http.HttpServletResponse;
-
-import org.springframework.web.context.request.RequestContextHolder;
-import org.springframework.web.context.request.ServletRequestAttributes;
 
 import java.util.Optional;
 
 @RestController
 @RequiredArgsConstructor
 @RequestMapping
-@CrossOrigin
 public class AuthController {
     private static final Logger logger = LoggerFactory.getLogger(AuthController.class);
     private final UserService userService;
@@ -53,21 +46,9 @@ public class AuthController {
         CustomUserDetails customUserDetails = userService.loadUserByUsername(authRequest.getUsername());
 
         String accessToken = jwtTokenUtils.generateAccessToken(customUserDetails);
-        String refreshToken = jwtTokenUtils.generateRefreshToken(customUserDetails);
+        String refreshToken = jwtTokenUtils.generateRefreshTokenSimpleUser(customUserDetails);
 
-        Cookie accessTokenCookie = new Cookie("accessToken", accessToken);
-        Cookie refreshTokenCookie = new Cookie("refreshToken", refreshToken);
-
-        accessTokenCookie.setMaxAge(86400); // 24 часа
-        refreshTokenCookie.setMaxAge(86400);
-
-        accessTokenCookie.setHttpOnly(true); // флаг HttpOnly
-        refreshTokenCookie.setHttpOnly(true);
-
-        HttpServletResponse response = ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes()).getResponse();
-
-        response.addCookie(accessTokenCookie);
-        response.addCookie(refreshTokenCookie);
+        jwtTokenUtils.makeCookies(accessToken, refreshToken);
 
         return ResponseEntity.ok("Токены созданы");
     }

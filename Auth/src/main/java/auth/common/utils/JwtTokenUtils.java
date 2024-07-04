@@ -1,15 +1,18 @@
 package auth.common.utils;
 
 import auth.common.UserDetails.CustomUserDetails;
-import auth.common.UserDetails.OAuthUserDetails;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
 
 import java.time.Duration;
 import java.util.Date;
@@ -53,38 +56,34 @@ public class JwtTokenUtils {
                 .compact();
     }
 
-    public String generateRefreshToken(CustomUserDetails customUserDetails){
+    public String generateRefreshTokenSimpleUser(UserDetails userDetails){
+        Map<String, Object> claims = new HashMap<>();
+
         Date issuedDate = new Date();
         Date expiredDate = new Date(issuedDate.getTime() + lifetimeRefresh.toMillis());
+        claims.put("type", "Simple");
+
         return Jwts.builder()
-                //.setClaims(claims)
-                .setSubject(customUserDetails.getUsername())
+                .setClaims(claims)
+                .setSubject(userDetails.getUsername())
                 .setIssuedAt(issuedDate)
                 .setExpiration(expiredDate)
                 .signWith(Keys.hmacShaKeyFor(secretRefresh.getBytes()), SignatureAlgorithm.HS256)
                 .compact();
     }
 
-    public String generateAccessTokenForUserVk(OAuthUserDetails oAuthUserDetails){
+    public String generateRefreshTokenUserVk(UserDetails userDetails){
         Map<String, Object> claims = new HashMap<>();
-        List<String> RoleList = oAuthUserDetails.getAuthorities().stream()
-                .map(GrantedAuthority::getAuthority)
-                .collect(Collectors.toList());
-        claims.put("roles", RoleList);
-
-        String firstName = oAuthUserDetails.getUsername();
-        String lastName = oAuthUserDetails.getLastName();
-        claims.put("firstName", firstName);
-        claims.put("lastName", lastName);
-
         Date issuedDate = new Date();
-        Date expiredDate = new Date(issuedDate.getTime() + jwtLifetime.toMillis());
+        Date expiredDate = new Date(issuedDate.getTime() + lifetimeRefresh.toMillis());
+
+        claims.put("type", "Vk");
         return Jwts.builder()
                 .setClaims(claims)
-                .setSubject(oAuthUserDetails.getId().toString())
+                .setSubject(userDetails.getUsername())
                 .setIssuedAt(issuedDate)
                 .setExpiration(expiredDate)
-                .signWith(Keys.hmacShaKeyFor(secretAccess.getBytes()), SignatureAlgorithm.HS256)
+                .signWith(Keys.hmacShaKeyFor(secretRefresh.getBytes()), SignatureAlgorithm.HS256)
                 .compact();
     }
 
@@ -112,14 +111,26 @@ public class JwtTokenUtils {
     public String getUsernameRefreshToken(String token){
         return getAllClaimsFromRefreshToken(token).getSubject();
     }
+    public String getTypeRefreshToken(String token){
+        return getAllClaimsFromRefreshToken(token).get("type", String.class);
+    }
     public List<String> getRoles(String token){
         return getAllClaimsFromAccessToken(token).get("roles", List.class);
     }
-    public Long getExpirationTimeAccessToken(String token){
-        return getAllClaimsFromAccessToken(token).getExpiration().getTime();
-    }
-    public Long getExpirationTimeRefreshToken(String token){
-        return getAllClaimsFromRefreshToken(token).getExpiration().getTime();
+    public void makeCookies(String accessToken, String refreshToken){
+        Cookie accessTokenCookie = new Cookie("accessToken", accessToken);
+        Cookie refreshTokenCookie = new Cookie("refreshToken", refreshToken);
+
+        accessTokenCookie.setMaxAge(86400); // 24 часа
+        refreshTokenCookie.setMaxAge(86400);
+
+        accessTokenCookie.setHttpOnly(true); // флаг HttpOnly
+        refreshTokenCookie.setHttpOnly(true);
+
+        HttpServletResponse response = ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes()).getResponse();
+
+        response.addCookie(accessTokenCookie);
+        response.addCookie(refreshTokenCookie);
     }
 
 }

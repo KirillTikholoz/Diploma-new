@@ -1,15 +1,15 @@
 package auth.common.utils;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import auth.common.dtos.VkResponseAccessTokenDto;
+import auth.common.dtos.VkResponseListUserInfoDto;
+import auth.common.dtos.VkResponseUserInfoDto;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
 import org.springframework.stereotype.Component;
+import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 
-import java.util.Map;
 @Component
 public class OAuthUtil {
     @Value("${vk.client}")
@@ -28,6 +28,8 @@ public class OAuthUtil {
     private String RESPONSE_TYPE;
     @Value("${vk.version}")
     private String VERSION;
+    @Value("${vk.auth-url}")
+    private String AUTH_URL;
 
     private final RestTemplate restTemplate;
 
@@ -36,8 +38,14 @@ public class OAuthUtil {
         }
 
     public String generateVkAuthUrl(){
-        return String.format("https://oauth.vk.com/authorize?client_id=%s&redirect_uri=%s&display=page&scope=%s&response_type=%s&v=%s",
-                CLIENT_ID, REDIRECT_URI, SCOPE, RESPONSE_TYPE, VERSION);
+        return UriComponentsBuilder.fromHttpUrl(AUTH_URL)
+                .queryParam("client_id", CLIENT_ID)
+                .queryParam("redirect_uri", REDIRECT_URI)
+                .queryParam("display", "page")
+                .queryParam("scope", SCOPE)
+                .queryParam("response_type", RESPONSE_TYPE)
+                .queryParam("v", VERSION)
+                .toUriString();
     }
     public String requestAccessToken(String code) {
         HttpHeaders headers = new HttpHeaders();
@@ -52,33 +60,20 @@ public class OAuthUtil {
 
         HttpEntity<?> entity = new HttpEntity<>(headers);
 
-        ResponseEntity<String> responseEntity = restTemplate.postForEntity(
+        ResponseEntity<VkResponseAccessTokenDto> responseEntity = restTemplate.postForEntity(
                 builder.toUriString(),
                 entity,
-                String.class);
+                VkResponseAccessTokenDto.class);
 
-        // Получение тела ответа в виде JSON-строки
-        String responseBody = responseEntity.getBody();
-        System.out.println("responseBody=" + responseBody);
-
-        // Парсинг JSON и извлечение токена доступа
-        String accessToken = extractAccessToken(responseBody);
-        System.out.println("accessToken=" + accessToken);
-
-        return accessToken;
-    }
-    private String extractAccessToken(String responseBody) {
-        ObjectMapper objectMapper = new ObjectMapper();
-        try {
-            Map<String, Object> responseMap = objectMapper.readValue(responseBody, Map.class);
-            return (String) responseMap.get("access_token");
-        } catch (JsonProcessingException e) {
-            e.printStackTrace();
-            return null;
+        if (responseEntity.getStatusCode().is2xxSuccessful()) {
+            VkResponseAccessTokenDto responseBody = responseEntity.getBody();
+            return responseBody.getAccess_token();
+        } else {
+            throw new RestClientException("Ошибка с получением access токена: " + responseEntity.getStatusCode());
         }
     }
 
-    public String getUserInfo(String accessToken) {
+    public VkResponseUserInfoDto getUserInfo(String accessToken) {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
 
@@ -86,33 +81,17 @@ public class OAuthUtil {
                 .queryParam("access_token", accessToken)
                 .queryParam("v", "5.131");
 
-        ResponseEntity<String> response = restTemplate.exchange(
+        ResponseEntity<VkResponseListUserInfoDto> response = restTemplate.exchange(
                 builder.toUriString(),
                 HttpMethod.GET,
                 null,
-                String.class);
+                VkResponseListUserInfoDto.class);
 
         if (response.getStatusCode().is2xxSuccessful()) {
-            return response.getBody();
+            return response.getBody().getUser();
         } else {
-            return null;
+            throw new RestClientException("Ошибка с получением информации о пользователе: " + response.getStatusCode());
         }
-    }
-
-    public JsonNode processJsonResponse(String jsonResponse) {
-        ObjectMapper objectMapper = new ObjectMapper();
-        try {
-            JsonNode jsonNode = objectMapper.readTree(jsonResponse);
-
-            JsonNode responseArrayNode = jsonNode.get("response");
-                JsonNode responseObjectNode = responseArrayNode.get(0);
-                return responseObjectNode;
-
-        } catch (JsonProcessingException e) {
-            e.printStackTrace();
-            return null;
-        }
-
     }
 
 }
