@@ -1,15 +1,11 @@
 package org.example.services;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.http.HttpResponse;
-import org.example.config.SecurityConfig;
 import org.example.domain.Document;
-import org.example.dtos.DocumentDownloadDto;
 import org.example.dtos.DocumentIdRequestDto;
 import org.example.dtos.DocumentIdResponseDto;
 import org.example.repo.DocRepository;
 import org.example.utils.ConnectionWithSearcherUtils;
-import org.example.utils.JwtTokenUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
