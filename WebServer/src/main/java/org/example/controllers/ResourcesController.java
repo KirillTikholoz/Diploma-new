@@ -1,6 +1,5 @@
 package org.example.controllers;
 
-import jakarta.annotation.security.PermitAll;
 import lombok.RequiredArgsConstructor;
 import org.apache.tika.Tika;
 import org.example.domain.Document;

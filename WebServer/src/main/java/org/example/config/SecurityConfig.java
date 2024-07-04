@@ -57,7 +57,7 @@ public class SecurityConfig {
                                 .anyRequest().authenticated()
                 )
                 .logout(logout ->
-                        logout.logoutUrl("/logout") // URL для выхода
+                        logout.logoutUrl("/logout")
                 )
                 .addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class);
         return http.build();
@@ -70,7 +70,7 @@ public class SecurityConfig {
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE"));
         configuration.setAllowCredentials(true);
         configuration.setMaxAge(3600L);
-        configuration.addAllowedHeader("*"); // Разрешите все заголовки запроса
+        configuration.addAllowedHeader("*");
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", configuration);
         return source;

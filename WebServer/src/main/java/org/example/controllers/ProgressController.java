@@ -4,7 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.example.domain.Document;
 import org.example.domain.Step;
 import org.example.dtos.AddStepRequestDto;
-import org.example.dtos.DocumentIdRequestDto;
+
 import org.example.services.DocService;
 import org.example.services.StepService;
 import org.example.utils.JwtTokenUtils;
